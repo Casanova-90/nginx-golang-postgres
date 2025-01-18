@@ -4,12 +4,11 @@ FROM golang:1.13-alpine AS build
 # Crear y establecer el directorio de trabajo
 WORKDIR /go/src/github.com/Casanova-90/nginx-golang-postgres
 
-# Copiar los archivos de go.mod y go.sum primero para aprovechar la caché de Docker
-COPY go.mod go.sum ./
-RUN go mod download
-
-# Copiar el resto de los archivos del repositorio
+# Copiar todos los archivos del repositorio
 COPY . .
+
+# Descargar las dependencias del módulo
+RUN go mod tidy
 
 # Construir la aplicación Go
 RUN go build -o server .
