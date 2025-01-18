@@ -31,7 +31,7 @@ func connect() (*sql.DB, error) {
 	connStr := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", dbUser, dbPassword, dbHost, dbPort, dbName)
 
 	// Connect to the database
-	return sql.Open("postgres", connStr)
+	return sql.Open("postgres", connStr) 
 }
 
 func blogHandler(w http.ResponseWriter, r *http.Request) {
