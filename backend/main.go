@@ -20,7 +20,6 @@ func connect() (*sql.DB, error) {
 	dbUser := os.Getenv("DB_USER")
 	dbPort := os.Getenv("DB_PORT")
 	dbName := os.Getenv("DB_NAME")
-
 		// Read the DB_PASSWORD from the secret file
 		dbPassword, err := os.ReadFile("/run/secrets/db-password") // Read the secret file
 		if err != nil {
