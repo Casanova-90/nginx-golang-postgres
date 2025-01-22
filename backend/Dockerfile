@@ -1,19 +1,27 @@
-FROM golang:1.15-alpine AS build
-WORKDIR /go/src/github.com/org/repo
-COPY . .
+# Use Go base image that matches your version (e.g., Go 1.15 for compatibility)
+FROM golang:1.15-alpine
 
-# Instalar dependencias
-RUN go mod download
+WORKDIR /app
+
+# Copy the application source code
+COPY . .
 
 # Install dependencies (if you have any)
 RUN go mod tidy
-# Comando de depuración
-RUN ls -la /go/src/github.com/org/repo
 
-# Construir la aplicación
-RUN go build -v -o server .
+# Build the Go application
+RUN go build -o server .
 
+# Use a lightweight image for running the application
 FROM alpine:3.12
+
+WORKDIR /root/
+
+# Copy the compiled binary from the build stage
+COPY --from=0 /app/server .
+
+# Expose the port on which the app will run
 EXPOSE 8000
-COPY --from=build /go/src/github.com/org/repo/server /server
-CMD ["/server"]
+
+# Start the application
+CMD ["./server"]
