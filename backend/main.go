@@ -1,21 +1,19 @@
 package main
 
 import (
-	"database/sql"
-	"encoding/json"
-	"fmt"
-	"log"
-	"net/http"
-	"os"
-	"time"
-	"io/ioutil" // Use ioutil for older Go versions
-	"os"
-	"strings" // Import strings package
-	"github.com/gorilla/handlers"
-	"github.com/gorilla/mux"
-	_ "github.com/lib/pq"
+    "database/sql"
+    "encoding/json"
+    "fmt"
+    "log"
+    "net/http"
+    "os"
+    "time"
+    "io/ioutil" // Use ioutil for older Go versions
+    "strings" // Import strings package
+    "github.com/gorilla/handlers"
+    "github.com/gorilla/mux"
+    _ "github.com/lib/pq"
 )
-
 
 func connect() (*sql.DB, error) {
 	// Get the environment variables
