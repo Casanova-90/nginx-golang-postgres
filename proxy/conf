@@ -1,7 +1,7 @@
 server {
     listen 80;
-    server_name proxy-768204647458.us-central1.run.app;
+    server_name proxy-tf-768204647458.us-central1.run.app;
     location / {
-        proxy_pass https://backend-768204647458.us-central1.run.app;  # My Cloud Run URL
+        proxy_pass https://backend-tf-768204647458.us-central1.run.app;  # My Cloud Run URL
     }
 }
