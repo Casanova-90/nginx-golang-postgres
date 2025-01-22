@@ -18,18 +18,25 @@ func connect() (*sql.DB, error) {
 	// Get the environment variables
 	dbHost := os.Getenv("DB_HOST")
 	dbUser := os.Getenv("DB_USER")
-	dbPassword := os.Getenv("DB_PASSWORD")
 	dbPort := os.Getenv("DB_PORT")
 	dbName := os.Getenv("DB_NAME")
 
-	// If any of the environment variables are missing, return an error
-	if dbHost == "" || dbUser == "" || dbPassword == "" || dbPort == "" || dbName == "" {
-		return nil, fmt.Errorf("missing required environment variables")
-	}
-
-	// Construct the connection string using the environment variables
-	connStr := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", dbUser, dbPassword, dbHost, dbPort, dbName)
-
+		// Read the DB_PASSWORD from the secret file
+		dbPassword, err := os.ReadFile("/run/secrets/db-password") // Read the secret file
+		if err != nil {
+			return nil, fmt.Errorf("failed to read DB_PASSWORD secret: %v", err)
+		}
+		// Trim any extra whitespace or newlines from the password
+		dbPassword = []byte(strings.TrimSpace(string(dbPassword)))
+	
+		// If any of the environment variables are missing, return an error
+		if dbHost == "" || dbUser == "" || dbPort == "" || dbName == "" {
+			return nil, fmt.Errorf("missing required environment variables")
+		}
+	
+		// Construct the connection string using the environment variables and the DB_PASSWORD from the secret
+		connStr := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", dbUser, dbPassword, dbHost, dbPort, dbName)
+	
 	// Connect to the database
 	return sql.Open("postgres", connStr) 
 }
