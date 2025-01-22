@@ -8,11 +8,14 @@ import (
 	"net/http"
 	"os"
 	"time"
-
+	"io/ioutil" // Use ioutil for older Go versions
+	"os"
+	"strings" // Import strings package
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 )
+
 
 func connect() (*sql.DB, error) {
 	// Get the environment variables
@@ -20,25 +23,27 @@ func connect() (*sql.DB, error) {
 	dbUser := os.Getenv("DB_USER")
 	dbPort := os.Getenv("DB_PORT")
 	dbName := os.Getenv("DB_NAME")
-		// Read the DB_PASSWORD from the secret file
-		dbPassword, err := os.ReadFile("/run/secrets/db-password") // Read the secret file
-		if err != nil {
-			return nil, fmt.Errorf("failed to read DB_PASSWORD secret: %v", err)
-		}
-		// Trim any extra whitespace or newlines from the password
-		dbPassword = []byte(strings.TrimSpace(string(dbPassword)))
-	
-		// If any of the environment variables are missing, return an error
-		if dbHost == "" || dbUser == "" || dbPort == "" || dbName == "" {
-			return nil, fmt.Errorf("missing required environment variables")
-		}
-	
-		// Construct the connection string using the environment variables and the DB_PASSWORD from the secret
-		connStr := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", dbUser, dbPassword, dbHost, dbPort, dbName)
-	
+
+	// Read the DB_PASSWORD from the secret file
+	dbPasswordBytes, err := ioutil.ReadFile("/run/secrets/db-password") // Use ioutil.ReadFile instead of os.ReadFile
+	if err != nil {
+		return nil, fmt.Errorf("failed to read DB_PASSWORD secret: %v", err)
+	}
+	// Trim any extra whitespace or newlines from the password
+	dbPassword := strings.TrimSpace(string(dbPasswordBytes))
+
+	// If any of the environment variables are missing, return an error
+	if dbHost == "" || dbUser == "" || dbPort == "" || dbName == "" {
+		return nil, fmt.Errorf("missing required environment variables")
+	}
+
+	// Construct the connection string using the environment variables and the DB_PASSWORD from the secret
+	connStr := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", dbUser, dbPassword, dbHost, dbPort, dbName)
+
 	// Connect to the database
-	return sql.Open("postgres", connStr) 
+	return sql.Open("postgres", connStr)
 }
+
 
 func blogHandler(w http.ResponseWriter, r *http.Request) {
 	db, err := connect()
