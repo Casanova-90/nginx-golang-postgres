@@ -5,6 +5,8 @@ COPY . .
 # Instalar dependencias
 RUN go mod download
 
+# Install dependencies (if you have any)
+RUN go mod tidy
 # Comando de depuración
 RUN ls -la /go/src/github.com/org/repo
 
