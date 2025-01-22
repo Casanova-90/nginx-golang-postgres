@@ -4,12 +4,14 @@ COPY . .
 
 # Instalar dependencias y herramientas adicionales
 RUN apk add --no-cache git
+
+# Descargar dependencias del proyecto
 RUN go mod tidy
 
-# Comando de depuración
+# Comando de depuración para verificar el contenido del directorio
 RUN ls -la /go/src/github.com/org/repo
 
-# Construir la aplicación con salida de depuración
+# Construir la aplicación con salida detallada para depuración
 RUN go build -v -o server . || (echo "Build failed" && exit 1)
 
 FROM alpine:3.12
