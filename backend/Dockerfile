@@ -1,4 +1,4 @@
-FROM golang:1.13-alpine AS build
+FROM golang:1.15-alpine AS build
 WORKDIR /go/src/github.com/org/repo
 COPY . .
 
@@ -11,8 +11,8 @@ RUN go mod tidy
 # Comando de depuración para verificar el contenido del directorio
 RUN ls -la /go/src/github.com/org/repo
 
-# Construir la aplicación con salida detallada para depuración
-RUN go build -v -o server . || (echo "Build failed" && exit 1)
+# Construir la aplicación con salida detallada para depuración y redirigir la salida de error a un archivo
+RUN go build -v -o server . > build.log 2>&1 || (cat build.log && exit 1)
 
 FROM alpine:3.12
 EXPOSE 8000
