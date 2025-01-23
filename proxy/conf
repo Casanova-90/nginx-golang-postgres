@@ -3,6 +3,11 @@ server {
     server_name 34.96.83.80; # IP LB proxy
 
     location / {
-        proxy_pass http://34.120.22.54:80;  # IP LB backend
-    }
+    proxy_pass http://34.120.22.54:80;
+    proxy_connect_timeout 60s;  # Timeout for establishing a connection
+    proxy_read_timeout 60s;     # Timeout for reading from the upstream server
+    proxy_send_timeout 60s;     # Timeout for sending requests to the upstream
+    send_timeout 60s;          # Timeout for the client connection
+}
+
 }
