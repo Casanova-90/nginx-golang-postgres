@@ -1,6 +1,6 @@
 server {
     listen 80;
-    server_name localhost; # IP LB proxy
+    server_name nginx-manuel.casanova.soy; # IP LB proxy
 
     location / {
     proxy_pass http://34.120.22.54;
