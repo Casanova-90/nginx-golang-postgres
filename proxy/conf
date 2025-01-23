@@ -1,6 +1,6 @@
 server {
     listen 80;
-    server_name 34.96.83.80:80; # IP LB proxy
+    server_name localhost; # IP LB proxy
     location / {
         proxy_pass 34.120.22.54:80;  # IP LB backend
     }
