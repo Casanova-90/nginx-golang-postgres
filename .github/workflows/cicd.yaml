@@ -1,10 +1,9 @@
 name: Deploy to Cloud Run
 
 env:
-  SERVICE_NAME: custom-fastapi-service
-  PROJECT_ID: h-t-d-a-f-a-t-g-c-r
-  DOCKER_IMAGE_URL: us-central1-docker.pkg.dev/h-t-d-a-f-a-t-g-c-r/custom-fastapi/custom-fastapi
-
+  SERVICE_NAME: backend-tf
+  PROJECT_ID: commit-hr-manuel-data
+  DOCKER_IMAGE_URL: northamerica-south1-docker.pkg.dev/commit-hr-manuel-data/docker/backend-tf2
 on:
   push:
     branches:
