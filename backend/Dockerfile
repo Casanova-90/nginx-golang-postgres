@@ -6,7 +6,7 @@ COPY . .
 RUN apk add --no-cache git
 
 # Descargar dependencias del proyecto
-RUN go mod tidy
+RUN  go mod tidy -v
 
 # Comando de depuración para verificar el contenido del directorio
 RUN ls -la /go/src/github.com/org/repo
