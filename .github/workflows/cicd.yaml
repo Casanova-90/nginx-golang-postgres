@@ -35,8 +35,8 @@ jobs:
           gcloud auth configure-docker northamerica-south1-docker.pkg.dev
 
       - name: Build and Push Backend Docker Image
-        run: |
-          docker build -t ${{ env.BACKEND_IMAGE_URL }}:latest -f backend/Dockerfile .
+        run: |docker build -t ${{ env.BACKEND_IMAGE_URL }}:latest -f backend/Dockerfile backend
+          
           docker push ${{ env.BACKEND_IMAGE_URL }}:latest
 
       - name: Deploy Backend to Cloud Run
@@ -69,7 +69,7 @@ jobs:
 
       - name: Build and Push Proxy Docker Image
         run: |
-          docker build -t ${{ env.PROXY_IMAGE_URL }}:latest -f proxy/Dockerfile .
+          docker build -t ${{ env.PROXY_IMAGE_URL }}:latest -f proxy/Dockerfile proxy
           docker push ${{ env.PROXY_IMAGE_URL }}:latest
 
       - name: Deploy Proxy to Cloud Run
