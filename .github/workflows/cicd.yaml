@@ -1,9 +1,10 @@
 name: Deploy to Cloud Run
 
 env:
-  SERVICE_NAME: backend-tf
   PROJECT_ID: commit-hr-manuel-data
-  DOCKER_IMAGE_URL: northamerica-south1-docker.pkg.dev/commit-hr-manuel-data/docker/backend-tf2
+  BACKEND_IMAGE_URL: northamerica-south1-docker.pkg.dev/commit-hr-manuel-data/docker/backend-tf2
+  PROXY_IMAGE_URL: northamerica-south1-docker.pkg.dev/commit-hr-manuel-data/docker/proxy-tf2
+
 on:
   push:
     branches:
@@ -13,7 +14,7 @@ on:
       - main
 
 jobs:
-  dockerize-and-deploy:
+  dockerize-and-deploy-backend:
     runs-on: ubuntu-latest
 
     steps:
@@ -31,18 +32,50 @@ jobs:
 
       - name: Configure Docker
         run: |
-          gcloud auth configure-docker us-central1-docker.pkg.dev
+          gcloud auth configure-docker northamerica-south1-docker.pkg.dev
 
-      - name: Build and Push Docker Image
+      - name: Build and Push Backend Docker Image
         run: |
-          docker build -t ${{ env.DOCKER_IMAGE_URL }}:latest -f Dockerfile.prod .
-          docker push ${{ env.DOCKER_IMAGE_URL }}:latest
+          docker build -t ${{ env.BACKEND_IMAGE_URL }}:latest -f backend/Dockerfile .
+          docker push ${{ env.BACKEND_IMAGE_URL }}:latest
 
-      - name: Deploy to Cloud Run
+      - name: Deploy Backend to Cloud Run
         run: |
-          echo SERVICE_NAME $SERVICE_NAME
-          gcloud run deploy $SERVICE_NAME \
-            --image ${{ env.DOCKER_IMAGE_URL }}:latest \
+          gcloud run deploy backend-tf \
+            --image ${{ env.BACKEND_IMAGE_URL }}:latest \
+            --platform managed \
+            --region us-east1 \
+            --allow-unauthenticated
+
+  dockerize-and-deploy-proxy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Google Cloud Auth
+        uses: 'google-github-actions/auth@v2'
+        with:
+          credentials_json: '${{ secrets.GCP_SA_KEY }}'
+          project_id: ${{ env.PROJECT_ID }}
+
+      - name: Set up Cloud SDK
+        uses: 'google-github-actions/setup-gcloud@v2'
+
+      - name: Configure Docker
+        run: |
+          gcloud auth configure-docker northamerica-south1-docker.pkg.dev
+
+      - name: Build and Push Proxy Docker Image
+        run: |
+          docker build -t ${{ env.PROXY_IMAGE_URL }}:latest -f proxy/Dockerfile .
+          docker push ${{ env.PROXY_IMAGE_URL }}:latest
+
+      - name: Deploy Proxy to Cloud Run
+        run: |
+          gcloud run deploy proxy-tf \
+            --image ${{ env.PROXY_IMAGE_URL }}:latest \
             --platform managed \
             --region us-east1 \
             --allow-unauthenticated
