@@ -44,7 +44,7 @@ jobs:
           gcloud run deploy backend-tf \
             --image ${{ env.BACKEND_IMAGE_URL }}:latest \
             --platform managed \
-            --region us-east1 \
+            --region us-central1 \
             --allow-unauthenticated
 
   dockerize-and-deploy-proxy:
@@ -77,5 +77,5 @@ jobs:
           gcloud run deploy proxy-tf \
             --image ${{ env.PROXY_IMAGE_URL }}:latest \
             --platform managed \
-            --region us-east1 \
+            --region us-central1 \
             --allow-unauthenticated
