@@ -113,7 +113,7 @@ func prepare() error {
 
 	// Insert some sample blog posts
 	for i := 0; i < 5; i++ {
-		if _, err := db.Exec("INSERT INTO blog (title) VALUES ($1);", fmt.Sprintf("Blog post #%d", i)); err != nil {
+		if _, err := db.Exec("INSERT INTO blog (title) VALUES ($1);", fmt.Sprintf("Blog post change test #%d", i)); err != nil {
 			return err
 		}
 	}
