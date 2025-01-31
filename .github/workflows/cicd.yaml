@@ -4,12 +4,12 @@ env:
   PROJECT_ID: commit-hr-manuel-data
   BACKEND_IMAGE_URL: northamerica-south1-docker.pkg.dev/commit-hr-manuel-data/docker/backend-tf2
   PROXY_IMAGE_URL: northamerica-south1-docker.pkg.dev/commit-hr-manuel-data/docker/proxy-tf2
-
+  ARTIFACTR_DOMAIN: northamerica-south1-docker.pkg.dev
 on:
   push:
     branches:
       - main
-  pull_request:
+  pull_request: #Delete
     branches:
       - main
 
@@ -32,17 +32,17 @@ jobs:
 
       - name: Configure Docker
         run: |
-          gcloud auth configure-docker northamerica-south1-docker.pkg.dev
+          gcloud auth configure-docker ${{ env.ARTIFACTR_DOMAIN }}
 
       - name: Build and Push Backend Docker Image
         run: |
-          docker build -t ${{ env.BACKEND_IMAGE_URL }}:latest -f backend/Dockerfile backend
-          docker push ${{ env.BACKEND_IMAGE_URL }}:latest
+          docker build -t ${{ env.BACKEND_IMAGE_URL }}:${{ github.sha }} -f backend/Dockerfile backend
+          docker push ${{ env.BACKEND_IMAGE_URL }}:${{ github.sha }}
 
       - name: Deploy Backend to Cloud Run
         run: |
           gcloud run deploy backend-tf \
-            --image ${{ env.BACKEND_IMAGE_URL }}:latest \
+            --image ${{ env.BACKEND_IMAGE_URL }}:${{ github.sha }} \
             --platform managed \
             --region us-central1 \
             --allow-unauthenticated
@@ -65,17 +65,17 @@ jobs:
 
       - name: Configure Docker
         run: |
-          gcloud auth configure-docker northamerica-south1-docker.pkg.dev
+          gcloud auth configure-docker  ${{ env.ARTIFACTR_DOMAIN }}
 
       - name: Build and Push Proxy Docker Image
         run: |
-          docker build -t ${{ env.PROXY_IMAGE_URL }}:latest -f proxy/Dockerfile proxy
-          docker push ${{ env.PROXY_IMAGE_URL }}:latest
+          docker build -t ${{ env.PROXY_IMAGE_URL }}:${{ github.sha }} -f proxy/Dockerfile proxy
+          docker push ${{ env.PROXY_IMAGE_URL }}:${{ github.sha }}
 
       - name: Deploy Proxy to Cloud Run
         run: |
           gcloud run deploy proxy-tf \
-            --image ${{ env.PROXY_IMAGE_URL }}:latest \
+            --image ${{ env.PROXY_IMAGE_URL }}:${{ github.sha }} \
             --platform managed \
             --region us-central1 \
             --allow-unauthenticated
